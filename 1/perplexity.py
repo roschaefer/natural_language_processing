@@ -1,3 +1,5 @@
+import os
+import math
 import xml.etree.ElementTree as ET
 
 class GeniusArticle:
@@ -40,30 +42,55 @@ class Bigram:
                     for sentence in article.sentences():
                         self.words.extend(sentence)
                         self.bigrams.extend((list(zip(sentence, sentence[1:]))))
+                self.__word_dict = dict()
+                self.__bigram_dict = dict()
 
         def count_bigram(self, bigram):
-            return self.bigrams.count(bigram) + 1 # laplace smoothing
+                if not ( bigram in self.__bigram_dict):
+                        self.__bigram_dict[bigram] = self.bigrams.count(bigram) + 1 # laplace smoothing
+                return self.__bigram_dict[bigram]
 
         def count_word(self, word):
-            return self.words.count(word)
+                if not ( word in self.__word_dict):
+                        self.__word_dict[word] = self.words.count(word) + 1
+                return self.__word_dict[word]
 
         def probability(self, bigram):
                 return (self.count_bigram(bigram)/self.count_word(bigram[1]))
 
-        def probabilities(self):
-                probabilities = []
-                for bigram in self.bigrams:
-                        probabilities.append(self.probability(bigram))
-                return probabilities
-        def perplexity(self):
-                perplexity = 1
-                for p in self.probabilities():
-                        perplexity *= p
+        def perplexity(self, otherBigram):
+                perplexity = 0
+                for bigram in otherBigram.bigrams:
+                        perplexity += math.log(self.probability(bigram))
                 return perplexity
 
+def ten_chunks(array):
+    chunks = []
+    for i in range(0, len(array), 10):
+        chunks.append(array[i:i+10])
+    return chunks
 
-article = GeniusArticle('./GENIA_treebank_v1/10022435.xml')
-bigram = Bigram([article])
-output = bigram.perplexity()
+mypath = "./GENIA_treebank_v1/"
+
+articles = []
+for (mypath, dirnames, filenames) in os.walk(mypath):
+    xmlfiles = [ fi for fi in filenames if fi.endswith(".xml") ]
+    for filename in xmlfiles:
+        filepath = os.path.join(mypath, filename)
+        articles.append(GeniusArticle(filepath))
+    break
+
+chunks = ten_chunks(articles)
+test = chunks[0]
+training = []
+for chunk in chunks[1:]:
+    training.extend(chunk)
+
+
+#articles = [GeniusArticle("./GENIA_treebank_v1/10022435.xml")]
+test_bigram = Bigram(test)
+training_bigram = Bigram(training)
+
+output = training_bigram.perplexity(test_bigram)
 print(output)
 
