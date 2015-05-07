@@ -34,15 +34,15 @@ class LanguageModel():
 
 
         def likelihood(self, bigram):
-            w1 = self.counted_unigrams()[bigram[0]]
-            w2_given_w1 = self.counted_bigrams()[bigram]
-            p = float(w2_given_w1)/float(w1)
-            return p
+            return self.likelihood_laplace(bigram, 1, 0)
 
-        def likelihood_laplace(self, bigram):
+        def likelihood_laplace(self, bigram, laplace = 1, v = None):
+            if (v == None): # option
+                v = self.number_of_unique_words()
+
             w1 = self.counted_unigrams()[bigram[0]]
             w2_given_w1 = self.counted_bigrams()[bigram]
-            p = float(w2_given_w1 + 1)/float(w1 + self.number_of_unique_words())
+            p = float(w2_given_w1 + laplace)/float(w1 + v)
             return p
 
         def perplexity_per_sentence(self, sentence):
