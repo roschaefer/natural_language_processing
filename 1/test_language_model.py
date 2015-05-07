@@ -41,9 +41,9 @@ class TestLanguageModel:
         assert model.likelihood(("no","sense")) == 1
         assert model.likelihood(("no","fence")) == 0
 
-    def test_likelihood_sentence(self):
+    def test_perplexity_per_sentence(self):
         training_data = [["This", "makes", "no", "sense"]]
-        test = ["no", "makes", "sense"]
         model = self.model(training_data)
-        assert model.likelihood(training_data[0]) == 1
-        assert model.likelihood(test) == 0
+        test = ["no", "makes", "sense"]
+        assert model.perplexity_per_sentence(training_data[0]) < 5
+        assert model.perplexity_per_sentence(test) > 5

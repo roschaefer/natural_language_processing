@@ -30,23 +30,28 @@ class LanguageModel():
         def number_of_unique_words(self):
             return len(self.counted_unigrams())
 
-        def likelihood(self, something):
-            if isinstance(something, list):
-                return self.likelihood_sentence(something)
-            else:
-                return self.likelihood_bigram(something)
 
-        def likelihood_bigram(self, bigram):
+        def likelihood(self, bigram):
             w1 = self.counted_unigrams()[bigram[0]]
             w2_given_w1 = self.counted_bigrams()[bigram]
             p = float(w2_given_w1)/float(w1)
             return p
 
-        def likelihood_sentence(self, sentence):
-            p = 1
-            for bigram in list(zip(sentence, sentence[1:])):
-                p *= self.likelihood_bigram(bigram)
+        def likelihood_laplace(self, bigram):
+            w1 = self.counted_unigrams()[bigram[0]]
+            w2_given_w1 = self.counted_bigrams()[bigram]
+            p = float(w2_given_w1 + 1)/float(w1 + self.number_of_unique_words())
             return p
+
+        def perplexity_per_sentence(self, sentence):
+            pps = 1
+            bigrams = list(zip(sentence, sentence[1:]))
+            exponent = -float(1)/len(bigrams)
+            for bigram in bigrams:
+                p = self.likelihood_laplace(bigram)
+                print(p)
+                pps *= math.pow(p, exponent)
+            return pps
 
         def raw_unigrams(self):
             unigrams = []
