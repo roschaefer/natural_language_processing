@@ -52,7 +52,6 @@ class LanguageModel():
             for bigram in bigrams:
                 p = self.likelihood_laplace(bigram)
                 pps *= math.pow(p, exponent)
-            print(pps)
             return pps
 
         def raw_unigrams(self):
@@ -118,34 +117,22 @@ class GeniusArticle:
                 return sentences
 
 
-def ten_chunks(array):
-    chunks = []
-    for i in range(0, len(array), 10):
-        chunks.append(array[i:i+10])
-    return chunks
-
 if (__name__ == "__main__"):
     mypath = "./GENIA_treebank_v1/"
+    runner = Runner()
+    test, training = runner.create_test_and_training_sets(runner.get_articles(mypath))
+    test_sentences = []
+    training_sentences = []
+    for article in training:
+        training_sentences.extend(article.sentences())
+    for article in test:
+        test_sentences.extend(article.sentences())
+    model = LanguageModel(training_sentences)
 
-    articles = []
-    for (mypath, dirnames, filenames) in os.walk(mypath):
-        xmlfiles = [ fi for fi in filenames if fi.endswith(".xml") ]
-        for filename in xmlfiles:
-            filepath = os.path.join(mypath, filename)
-            articles.append(GeniusArticle(filepath))
-        break
+    sum = 0
+    for sentence in test_sentences:
+        sum += model.perplexity_per_sentence(sentence)
+    average_perplexity = sum/len(test_sentences)
+    print(average_perplexity)
 
-    chunks = ten_chunks(articles)
-    test = chunks[0]
-    training = []
-    for chunk in chunks[1:]:
-        training.extend(chunk)
-
-
-    #articles = [GeniusArticle("./GENIA_treebank_v1/10022435.xml")]
-    test_bigram = Bigram(test)
-    training_bigram = Bigram(training)
-
-    output = training_bigram.perplexity(test_bigram)
-    print(output)
 
