@@ -1,6 +1,7 @@
 import os
 import math
 import xml.etree.ElementTree as ET
+from collections import defaultdict
 
 class Runner():
         def create_test_and_training_sets(self, input):
@@ -23,11 +24,31 @@ class Runner():
                 return articles
 
 class LanguageModel():
+        def raw_unigrams(self, sentences):
+            unigrams = []
+            for sentence in sentences:
+                for word in sentence:
+                    unigrams.append(word)
+            return unigrams
+
+        def counted_unigrams(self, sentences):
+            return self.__counted(self.raw_unigrams(sentences))
+
         def raw_bigrams(self, sentences):
-                raw_bigrams = []
-                for sentence in sentences:
-                    raw_bigrams.extend( list(zip(sentence, sentence[1:])))
-                return raw_bigrams
+            raw_bigrams = []
+            for sentence in sentences:
+                raw_bigrams.extend( list(zip(sentence, sentence[1:])))
+            return raw_bigrams
+
+        def counted_bigrams(self, sentences):
+            return self.__counted(self.raw_bigrams(sentences))
+
+        def __counted(self, somelist):
+            counted_something = defaultdict(int)
+            for something in somelist:
+                counted_something[something] += 1
+            return counted_something
+
 
 
 class GeniusArticle:
