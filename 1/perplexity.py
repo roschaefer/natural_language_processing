@@ -24,40 +24,37 @@ class Runner():
                 return articles
 
 class LanguageModel():
-        def __init__(self):
-            self.training_data = []
+        def __init__(self, training_data):
+            self.training_data = training_data
 
-        def train(self, data):
-            self.training_data.extend(data)
-
-        def number_of_unique_words(self, sentences):
-            return len(self.counted_unigrams(sentences))
+        def number_of_unique_words(self):
+            return len(self.counted_unigrams())
 
         def likelihood(self, bigram):
-            w1 = self.counted_unigrams(self.training_data)[bigram[0]]
-            w2_given_w1 = self.counted_bigrams(self.training_data)[bigram]
+            w1 = self.counted_unigrams()[bigram[0]]
+            w2_given_w1 = self.counted_bigrams()[bigram]
             p = float(w2_given_w1)/float(w1)
             return p
 
 
-        def raw_unigrams(self, sentences):
+        def raw_unigrams(self):
             unigrams = []
-            for sentence in sentences:
+            for sentence in self.training_data:
                 for word in sentence:
                     unigrams.append(word)
             return unigrams
 
-        def counted_unigrams(self, sentences):
-            return self.__counted(self.raw_unigrams(sentences))
+        def counted_unigrams(self):
+            return self.__counted(self.raw_unigrams())
 
-        def raw_bigrams(self, sentences):
+        def raw_bigrams(self):
             raw_bigrams = []
-            for sentence in sentences:
+            for sentence in self.training_data:
                 raw_bigrams.extend( list(zip(sentence, sentence[1:])))
             return raw_bigrams
 
-        def counted_bigrams(self, sentences):
-            return self.__counted(self.raw_bigrams(sentences))
+        def counted_bigrams(self):
+            return self.__counted(self.raw_bigrams())
 
         def __counted(self, somelist):
             counted_something = defaultdict(int)
