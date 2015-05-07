@@ -34,7 +34,7 @@ class LanguageModel():
 
 
         def likelihood(self, bigram):
-            return self.likelihood_laplace(bigram, 1, 0)
+            return self.likelihood_laplace(bigram, 0, 0)
 
         def likelihood_laplace(self, bigram, laplace = 1, v = None):
             if (v == None): # option
