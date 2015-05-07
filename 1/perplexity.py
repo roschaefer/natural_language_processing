@@ -2,6 +2,34 @@ import os
 import math
 import xml.etree.ElementTree as ET
 
+class Runner():
+        def create_test_and_training_sets(self, input):
+                test, training = [],[]
+                for i in range(0,len(input)):
+                    if (i % 10 == 0):
+                        test.append(input[i])
+                    else:
+                        training.append(input[i])
+                return test, training
+
+        def get_articles(self, folder):
+                articles = []
+                for (folder, dirnames, filenames) in os.walk(folder):
+                    xmlfiles = [ fi for fi in filenames if fi.endswith(".xml") ]
+                    for filename in xmlfiles:
+                        filepath = os.path.join(folder, filename)
+                        articles.append(GeniusArticle(filepath))
+                    break
+                return articles
+
+class LanguageModel():
+        def raw_bigrams(self, sentences):
+                raw_bigrams = []
+                for sentence in sentences:
+                    raw_bigrams.extend( list(zip(sentence, sentence[1:])))
+                return raw_bigrams
+
+
 class GeniusArticle:
         def __init__(self, location):
                 self.location = location
@@ -70,27 +98,28 @@ def ten_chunks(array):
         chunks.append(array[i:i+10])
     return chunks
 
-mypath = "./GENIA_treebank_v1/"
+if (__name__ == "__main__"):
+    mypath = "./GENIA_treebank_v1/"
 
-articles = []
-for (mypath, dirnames, filenames) in os.walk(mypath):
-    xmlfiles = [ fi for fi in filenames if fi.endswith(".xml") ]
-    for filename in xmlfiles:
-        filepath = os.path.join(mypath, filename)
-        articles.append(GeniusArticle(filepath))
-    break
+    articles = []
+    for (mypath, dirnames, filenames) in os.walk(mypath):
+        xmlfiles = [ fi for fi in filenames if fi.endswith(".xml") ]
+        for filename in xmlfiles:
+            filepath = os.path.join(mypath, filename)
+            articles.append(GeniusArticle(filepath))
+        break
 
-chunks = ten_chunks(articles)
-test = chunks[0]
-training = []
-for chunk in chunks[1:]:
-    training.extend(chunk)
+    chunks = ten_chunks(articles)
+    test = chunks[0]
+    training = []
+    for chunk in chunks[1:]:
+        training.extend(chunk)
 
 
-#articles = [GeniusArticle("./GENIA_treebank_v1/10022435.xml")]
-test_bigram = Bigram(test)
-training_bigram = Bigram(training)
+    #articles = [GeniusArticle("./GENIA_treebank_v1/10022435.xml")]
+    test_bigram = Bigram(test)
+    training_bigram = Bigram(training)
 
-output = training_bigram.perplexity(test_bigram)
-print(output)
+    output = training_bigram.perplexity(test_bigram)
+    print(output)
 
