@@ -35,8 +35,15 @@ class TestLanguageModel:
         model = self.model(training_data)
         assert model.number_of_unique_words() == 5
 
-    def test_likelihood(self):
-        training_data = [["This", "makes", "no", "sense"],["something", "else"]]
+    def test_likelihood_bigram(self):
+        training_data = [["This", "makes", "no", "sense"]]
         model = self.model(training_data)
         assert model.likelihood(("no","sense")) == 1
         assert model.likelihood(("no","fence")) == 0
+
+    def test_likelihood_sentence(self):
+        training_data = [["This", "makes", "no", "sense"]]
+        test = ["no", "makes", "sense"]
+        model = self.model(training_data)
+        assert model.likelihood(training_data[0]) == 1
+        assert model.likelihood(test) == 0

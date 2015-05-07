@@ -30,12 +30,23 @@ class LanguageModel():
         def number_of_unique_words(self):
             return len(self.counted_unigrams())
 
-        def likelihood(self, bigram):
+        def likelihood(self, something):
+            if isinstance(something, list):
+                return self.likelihood_sentence(something)
+            else:
+                return self.likelihood_bigram(something)
+
+        def likelihood_bigram(self, bigram):
             w1 = self.counted_unigrams()[bigram[0]]
             w2_given_w1 = self.counted_bigrams()[bigram]
             p = float(w2_given_w1)/float(w1)
             return p
 
+        def likelihood_sentence(self, sentence):
+            p = 1
+            for bigram in list(zip(sentence, sentence[1:])):
+                p *= self.likelihood_bigram(bigram)
+            return p
 
         def raw_unigrams(self):
             unigrams = []
@@ -47,10 +58,11 @@ class LanguageModel():
         def counted_unigrams(self):
             return self.__counted(self.raw_unigrams())
 
+
         def raw_bigrams(self):
             raw_bigrams = []
             for sentence in self.training_data:
-                raw_bigrams.extend( list(zip(sentence, sentence[1:])))
+                raw_bigrams.extend(list(zip(sentence, sentence[1:])))
             return raw_bigrams
 
         def counted_bigrams(self):
