@@ -26,6 +26,8 @@ class Runner():
 class LanguageModel():
         def __init__(self, training_data):
             self.training_data = training_data
+            self.__counted_unigrams = None
+            self.__counted_bigrams = None
 
         def number_of_unique_words(self):
             return len(self.counted_unigrams())
@@ -49,8 +51,8 @@ class LanguageModel():
             exponent = -float(1)/len(bigrams)
             for bigram in bigrams:
                 p = self.likelihood_laplace(bigram)
-                print(p)
                 pps *= math.pow(p, exponent)
+            print(pps)
             return pps
 
         def raw_unigrams(self):
@@ -61,8 +63,9 @@ class LanguageModel():
             return unigrams
 
         def counted_unigrams(self):
-            return self.__counted(self.raw_unigrams())
-
+            if (self.__counted_unigrams == None):
+                self.__counted_unigrams = self.__counted(self.raw_unigrams())
+            return self.__counted_unigrams
 
         def raw_bigrams(self):
             raw_bigrams = []
@@ -71,7 +74,9 @@ class LanguageModel():
             return raw_bigrams
 
         def counted_bigrams(self):
-            return self.__counted(self.raw_bigrams())
+            if (self.__counted_bigrams == None):
+                self.__counted_bigrams = self.__counted(self.raw_bigrams())
+            return self.__counted_bigrams
 
         def __counted(self, somelist):
             counted_something = defaultdict(int)
@@ -112,36 +117,6 @@ class GeniusArticle:
                         sentences.append(words)
                 return sentences
 
-
-class Bigram:
-        def __init__(self, articles):
-                self.words = []
-                self.bigrams = []
-                for article in articles:
-                    for sentence in article.sentences():
-                        self.words.extend(sentence)
-                        self.bigrams.extend((list(zip(sentence, sentence[1:]))))
-                self.__word_dict = dict()
-                self.__bigram_dict = dict()
-
-        def count_bigram(self, bigram):
-                if not ( bigram in self.__bigram_dict):
-                        self.__bigram_dict[bigram] = self.bigrams.count(bigram) + 1 # laplace smoothing
-                return self.__bigram_dict[bigram]
-
-        def count_word(self, word):
-                if not ( word in self.__word_dict):
-                        self.__word_dict[word] = self.words.count(word) + 1
-                return self.__word_dict[word]
-
-        def probability(self, bigram):
-                return (self.count_bigram(bigram)/self.count_word(bigram[1]))
-
-        def perplexity(self, otherBigram):
-                perplexity = 0
-                for bigram in otherBigram.bigrams:
-                        perplexity += math.log(self.probability(bigram))
-                return perplexity
 
 def ten_chunks(array):
     chunks = []
