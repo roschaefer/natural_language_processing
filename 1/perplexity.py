@@ -2,8 +2,16 @@ import os
 import math
 import xml.etree.ElementTree as ET
 from collections import defaultdict
+import random
+import statistics
 
 class Runner():
+        def create_test_and_training_sets_randomly(self, input):
+                k = int(len(input)*0.9)
+                training= random.sample(input, k)
+                test = [f for f in input if f not in training]
+                return test, training
+
         def create_test_and_training_sets(self, input):
                 test, training = [],[]
                 for i in range(0,len(input)):
@@ -119,20 +127,29 @@ class GeniusArticle:
 
 if (__name__ == "__main__"):
     mypath = "./GENIA_treebank_v1/"
-    runner = Runner()
-    test, training = runner.create_test_and_training_sets(runner.get_articles(mypath))
-    test_sentences = []
-    training_sentences = []
-    for article in training:
-        training_sentences.extend(article.sentences())
-    for article in test:
-        test_sentences.extend(article.sentences())
-    model = LanguageModel(training_sentences)
+    sum_of_averages = 0
+    average_perplexities = []
+    for i in range(10):
+        runner = Runner()
+        test, training = runner.create_test_and_training_sets_randomly(runner.get_articles(mypath))
+        test_sentences = []
+        training_sentences = []
+        for article in training:
+            training_sentences.extend(article.sentences())
+        for article in test:
+            test_sentences.extend(article.sentences())
+        model = LanguageModel(training_sentences)
 
-    sum = 0
-    for sentence in test_sentences:
-        sum += model.perplexity_per_sentence(sentence)
-    average_perplexity = sum/len(test_sentences)
-    print(average_perplexity)
+        sum = 0
+        for sentence in test_sentences:
+            sum += model.perplexity_per_sentence(sentence)
+        average_perplexities.append(sum/len(test_sentences))
+
+    for average_perplexity in average_perplexities:
+        print("Average perplexity: %f" % average_perplexity)
+
+
+    print("Mean value: %f" % statistics.mean(average_perplexities))
+    print("Standard deviation: %f" % statistics.stdev(average_perplexities))
 
 
