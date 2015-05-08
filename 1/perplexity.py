@@ -5,6 +5,8 @@ from collections import defaultdict
 import random
 import statistics
 
+__author__ = "Robert Schaefer"
+
 class Runner():
         def create_test_and_training_sets_randomly(self, input):
                 k = int(len(input)*0.9)
