@@ -23,6 +23,10 @@ class TestArticle:
     #def graph(self, parser):
         #return parser.graph()
 
-    def test_sentence(self):
+    def test_word_sentence(self):
         article = self.article('test1')
-        assert article.sentences == [['A', 'sentence', 'for', 'the', 'testing', 'of', 'the', 'genia', 'class', '.']]
+        assert article.word_sentences == [['A', 'sentence', 'for', 'the', 'testing', 'of', 'the', 'genia', 'class', '.']]
+
+    def test_word_sentence(self):
+        article = self.article('test1')
+        assert article.tag_sentences == [['DT', 'NN', 'IN', 'DT', 'NN', 'IN', 'DT', 'NN', 'NN', 'PERIOD']]
