@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE Annotation>
+<?xml-stylesheet type="text/css" href="GENIA_tree_bracket.css"?>
+<Annotation>
+  <PubmedArticleSet>
+    <PubmedArticle>
+      <MedlineCitation>
+        <PMID>1279685</PMID>
+        <Article>
+          <ArticleTitle>
+            <sentence id="S1">
+              <tok cat="DT">A</tok>
+              <tok cat="NN">sentence</tok>
+              <tok cat="IN">for</tok>
+              <tok cat="DT">the</tok>
+              <tok cat="NN">testing</tok>
+              <tok cat="IN">of</tok>
+              <tok cat="DT">the</tok>
+              <tok cat="NN">genia</tok>
+              <tok cat="NN">class</tok>
+              <tok cat="PERIOD">.</tok>
+            </sentence>
+          </ArticleTitle>
+          <Abstract>
+            <AbstractText>
+            </AbstractText>
+          </Abstract>
+        </Article>
+      </MedlineCitation>
+    </PubmedArticle>
+  </PubmedArticleSet>
+</Annotation>
