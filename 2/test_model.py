@@ -38,4 +38,7 @@ class TestModel:
         assert model.emit[('DT', 'the')] == 1
         assert model.emit[('NN', 'the')] == 0
 
+    def test_possible_tags(self):
+        model = self.example_model()
+        assert model.possible_tags == set(["NN", "VB", "DT"])
 
