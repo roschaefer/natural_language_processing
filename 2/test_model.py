@@ -45,16 +45,17 @@ class TestModel:
 
     def test_prob_t(self):
         model = self.example_model()
-        assert model.prob_t("DT", "VB") == 1
-        assert model.prob_t("VB", "NN") == 1
+        assert model.prob_t("DT", "VB") == 0.5
+        assert model.prob_t("VB", "NN") > 0.5
+        assert model.prob_t("PP", "VB") == 0.4
 
     def test_prob_e(self):
         model = self.example_model()
-        assert model.prob_e("love", "VB") == 2.0 / 3.0 # two times a verb, once a noun
+        assert model.prob_e("love", "VB") == 0.25
 
 
-    #def test_best_score(self):
-        #model = self.example_model()
-        #model.test(["I", "am", "the", "sun"])
-        #assert model.best_score(1, "NN") == 1
-        #assert model.best_score(2, "VB") == 0.5
+    def test_best_score(self):
+        model = self.example_model()
+        sentence = ["I", "am", "the", "sun"]
+        result = model.forward_step(sentence)
+        embed()

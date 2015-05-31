@@ -11,7 +11,7 @@ class Model:
         self.context = defaultdict(int)
         self.transition = defaultdict(int)
         self.emit = defaultdict(int)
-        self.possible_tags = set([])
+        self.possible_tags = set()
         for sentence in word_tag_sentences:
             previous = '<s>'
             self.context[previous] += 1
@@ -25,23 +25,29 @@ class Model:
             self.transition[(previous, '</s>')] += 1
 
 
-    def test(self, sentence):
-        self.current_sentence = sentence
-        return None
 
     def prob_t(self, tag, previous_tag):
-        # TODO: smoothing
-        return float(self.transition[(previous_tag, tag)]) / float(self.tag_unigrams[tag])
+        vocabulary_size = len(self.tag_unigrams)
+        return float(self.transition[(previous_tag, tag)] + 1) / float(self.tag_unigrams[tag] + vocabulary_size)
 
     def prob_e(self, word, tag):
-        return float(self.emit[(tag, word)]) / float(self.context[word])
+        vocabulary_size = len(self.context)
+        return float(self.emit[(tag, word)] + 1) / float(self.context[word] + vocabulary_size)
 
-    def best_score(self, index, tag):
-        scores = []
-        if (index == 0):
-            return 0
-        word = self.current_sentence[index]
-        for previous_tag in self.possible_tags:
-                score = self.best_score(index - 1, previous_tag) + math.log(self.prob_t(tag,previous_tag)) + math.log(self.prob_e(word, previous_tag))
-                scores.append(score)
-        return 1
+    def forward_step(self, sentence):
+        sentence = ['<s>'] + sentence
+        best_score = {}
+        best_edge = {}
+        best_score[(sentence[0], '<s>')] = 0
+        tags_to_start = ['<s>']
+        tags_to_start.extend(self.possible_tags)
+        for word, next_word in zip(sentence[0::1], sentence[1::1]):
+            for prev in tags_to_start:
+                for next in self.possible_tags:
+                    print(word, next_word, prev, next)
+                    if (((word, prev) in best_score) and ((prev, next) in self.transition)):
+                        score = best_score[(word, prev)] - math.log(self.prob_t(next,prev)) - math.log(self.prob_e(word, next))
+                        if (((next_word, next) not in best_score) or (best_score[(next_word, next)] > score)):
+                                best_score[(next_word, next)] = score
+                                best_edge[(next_word, next)] = (word, prev)
+        return best_score, best_edge
