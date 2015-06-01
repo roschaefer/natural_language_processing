@@ -2,6 +2,7 @@ import os
 import markov
 import genia
 import random
+from IPython import embed
 
 __author__ = "Robert Schaefer"
 
@@ -21,8 +22,20 @@ class PosTagger:
                 break
         return self.__articles
 
-    def run(self, location):
-        pass
+    def flatten(self, list):
+         return [item for sublist in list for item in sublist]
+
+    def run(self, n=10):
+        partitions = self.random_partitions(n)
+        for test in partitions:
+                training = []
+                for p in [p for p in partitions if p != test]:
+                    training.extend(p)
+                all_wt_sentences = [a.word_tag_sentences for a in training]
+                wt_sentences = self.flatten(all_wt_sentences)
+                model = markov.Model(wt_sentences)
+                for test_sentence in self.flatten([a.word_tag_sentences for a in test]):
+                    print(model.tag(test_sentence))
 
     def random_partitions(self, n = 10, input = None):
         partitions = []
@@ -48,4 +61,5 @@ class PosTagger:
 
 if __name__ == "__main__":
     path = "./GENIA_sample/"
-    tagger = PosTagger.new(path)
+    tagger = PosTagger(path)
+    tagger.run(10)
