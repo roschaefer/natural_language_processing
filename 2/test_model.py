@@ -54,8 +54,7 @@ class TestModel:
         assert model.prob_e("love", "VB") == 0.25
 
 
-    def test_best_score(self):
+    def test_tag(self):
         model = self.example_model()
         sentence = ["I", "am", "the", "sun"]
-        result = model.forward_step(sentence)
-        embed()
+        assert model.tag(sentence) ==  [('I', 'NN'), ('am', 'VB'), ('the', 'DT'), ('sun', 'NN')]

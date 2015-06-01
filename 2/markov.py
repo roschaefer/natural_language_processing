@@ -35,19 +35,35 @@ class Model:
         return float(self.emit[(tag, word)] + 1) / float(self.context[word] + vocabulary_size)
 
     def forward_step(self, sentence):
-        sentence = ['<s>'] + sentence
+        sentence = ['<s>'] + sentence + ['</s>']
         best_score = {}
         best_edge = {}
         best_score[(sentence[0], '<s>')] = 0
         tags_to_start = ['<s>']
         tags_to_start.extend(self.possible_tags)
-        for word, next_word in zip(sentence[0::1], sentence[1::1]):
+        for word, next_word in zip(sentence[0::1], sentence[1::1]): # possible bug here because of two lists with unequal length?
             for prev in tags_to_start:
                 for next in self.possible_tags:
-                    print(word, next_word, prev, next)
                     if (((word, prev) in best_score) and ((prev, next) in self.transition)):
                         score = best_score[(word, prev)] - math.log(self.prob_t(next,prev)) - math.log(self.prob_e(word, next))
                         if (((next_word, next) not in best_score) or (best_score[(next_word, next)] > score)):
                                 best_score[(next_word, next)] = score
                                 best_edge[(next_word, next)] = (word, prev)
         return best_score, best_edge
+
+    def backward_step(self, best_edge):
+        current_edge = None
+        # let's find the end
+        for edge in best_edge:
+            if (edge[0] == '</s>'):
+                    current_edge = best_edge[edge]
+        result = []
+        while (current_edge != ("<s>", "<s>")):
+            result.append(current_edge)
+            current_edge = best_edge[current_edge]
+        return list(reversed(result))
+
+
+    def tag(self, sentence):
+        best_score, best_edge = self.forward_step(sentence)
+        return self.backward_step(best_edge)
