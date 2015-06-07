@@ -26,16 +26,36 @@ class PosTagger:
          return [item for sublist in list for item in sublist]
 
     def run(self, n=10):
+        self.true_positives = 0
+        self.false_positives = 0
         partitions = self.random_partitions(n)
         for test in partitions:
                 training = []
                 for p in [p for p in partitions if p != test]:
                     training.extend(p)
-                all_wt_sentences = [a.word_tag_sentences for a in training]
-                wt_sentences = self.flatten(all_wt_sentences)
-                model = markov.Model(wt_sentences)
-                for test_sentence in self.flatten([a.word_tag_sentences for a in test]):
-                    print(model.tag(test_sentence))
+                self.run_fold(test, training)
+
+    def run_fold(self, test, training):
+        training_word_tag_sentences = self.flatten([a.word_tag_sentences for a in training])
+        model = markov.Model(training_word_tag_sentences)
+        test_word_sentences = self.flatten([a.word_sentences for a in test])
+        expected_tagged_sentences = self.flatten([a.word_tag_sentences for a in test])
+        for i  in range(len(test_word_sentences)):
+            tagged_sentence = model.tag(test_word_sentences[i])
+            tp, fp = self.compare(tagged_sentence, expected_tagged_sentences[i])
+            self.true_positives += tp
+            self.false_positives += fp
+
+    def compare(self, tagged_sentence, expected_sentence):
+        tp= 0
+        fp= 0
+        for i in range(len(tagged_sentence)):
+            if (tagged_sentence[i] == expected_sentence[i]):
+                tp += 1
+            else:
+                fp += 1
+        return tp, fp
+
 
     def random_partitions(self, n = 10, input = None):
         partitions = []
@@ -49,17 +69,14 @@ class PosTagger:
             partitions[i % n].append(input[i])
         return partitions
 
-    def true_positives(self):
-        pass
-
-    def false_positives(self):
-        pass
-
     def precision(self):
-        pass
+        return float(self.true_positives)/float(self.true_positives + self.false_positives)
 
 
 if __name__ == "__main__":
-    path = "./GENIA_sample/"
+    path = "./GENIA_test2/"
     tagger = PosTagger(path)
-    tagger.run(10)
+    tagger.run(2)
+    print("TP : " , tagger.true_positives)
+    print("FP : " , tagger.false_positives)
+    print(tagger.precision())
