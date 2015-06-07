@@ -42,30 +42,30 @@ class Model:
         best_score[(0, '<s>')] = 0
         tags_to_start = ['<s>']
         tags_to_start.extend(self.possible_tags)
-        for i in range(0, len(sentence)-1):
+        for i in range(0, len(sentence)-2):
             for prev in tags_to_start:
                 for next in self.possible_tags:
-                    if (((i-1, prev) in best_score) and ((prev, next) in self.transition)):
-                        score = best_score[(i-1, prev)] - math.log(self.prob_t(next,prev)) - math.log(self.prob_e(i-1, next))
-                        if (((i, next) not in best_score) or (best_score[(i, next)] > score)):
-                                best_score[(i, next)] = score
-                                best_edge[(i, next)] = (i-1, prev)
+                    if (((i, prev) in best_score) and ((prev, next) in self.transition)):
+                        score = best_score[(i, prev)] - math.log(self.prob_t(next,prev)) - math.log(self.prob_e(sentence[i+1], next))
+                        if (((i+1, next) not in best_score) or (best_score[(i+1, next)] > score)):
+                                best_score[(i+1, next)] = score
+                                best_edge[(i+1, next)] = (i, prev)
         # end tag
-        for prev in tags_to_start:
-            i = len(sentence)-1
+        for prev in self.possible_tags:
+            i = len(sentence)-2
             next = '</s>'
-            if (((i-1, prev) in best_score) and ((prev, next) in self.transition)):
-                score = best_score[(i-1, prev)] - math.log(self.prob_t(next,prev)) - math.log(self.prob_e(i-1, next))
-                if (((i, next) not in best_score) or (best_score[(i, next)] > score)):
-                        best_score[(i, next)] = score
-                        best_edge[(i, next)] = (i-1, prev)
+            if (((i, prev) in best_score) and ((prev, next) in self.transition)):
+                score = best_score[(i, prev)] - math.log(self.prob_t(next,prev)) - math.log(self.prob_e(sentence[i+1], next))
+                if (((i+1, next) not in best_score) or (best_score[(i+1, next)] > score)):
+                        best_score[(i+1, next)] = score
+                        best_edge[(i+1, next)] = (i, prev)
         return best_score, best_edge
 
     def backward_step(self, sentence, best_edge):
-        current_edge = best_edge[(len(sentence) + 1, "</s>")] # +2 for <s> and </s> tags
+        current_edge = best_edge[(len(sentence) + 1 , "</s>")] # +2 for <s> and </s> tags
         result = []
         while (current_edge != (0, "<s>")):
-            word = sentence[current_edge[0] -1]
+            word = sentence[current_edge[0] - 1]
             tag = current_edge[1]
             result.append((word, tag))
             current_edge = best_edge[current_edge]
