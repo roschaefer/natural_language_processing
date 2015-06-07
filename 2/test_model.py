@@ -1,6 +1,5 @@
 import markov
 import pytest
-from IPython import embed
 
 class TestModel:
 

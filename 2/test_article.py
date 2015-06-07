@@ -1,6 +1,5 @@
 import genia
 import pytest
-from IPython import embed
 
 class TestArticle:
     @pytest.fixture

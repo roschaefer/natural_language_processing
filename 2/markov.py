@@ -1,6 +1,5 @@
 from collections import defaultdict
 import math
-from IPython import embed
 
 class Model:
     def __init__(self, word_tag_sentences):

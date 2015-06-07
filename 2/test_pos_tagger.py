@@ -1,6 +1,5 @@
 import pos_tagger
 import pytest
-from IPython import embed
 
 class TestPosTagger:
     @pytest.fixture
