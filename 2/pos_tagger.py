@@ -74,7 +74,7 @@ class PosTagger:
 
 
 if __name__ == "__main__":
-    path = "./GENIA_test2/"
+    path = "./GENIA_sample/"
     tagger = PosTagger(path)
     tagger.run(2)
     print("TP : " , tagger.true_positives)
