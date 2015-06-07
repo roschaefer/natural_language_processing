@@ -24,16 +24,16 @@ class Model:
                 self.possible_tags.add(tag)
                 previous = tag
             self.transition[(previous, '</s>')] += 1
+        self.vocabulary_size_t = len(self.tag_unigrams)
+        self.vocabulary_size_e = len(self.context)
 
 
 
     def prob_t(self, tag, previous_tag):
-        vocabulary_size = len(self.tag_unigrams)
-        return float(self.transition[(previous_tag, tag)] + 1) / float(self.tag_unigrams[tag] + vocabulary_size)
+        return float(self.transition[(previous_tag, tag)] + 1) / float(self.tag_unigrams[tag] + self.vocabulary_size_t)
 
     def prob_e(self, word, tag):
-        vocabulary_size = len(self.context)
-        return float(self.emit[(tag, word)] + 1) / float(self.context[word] + vocabulary_size)
+        return float(self.emit[(tag, word)] + 1) / float(self.context[word] + self.vocabulary_size_e)
 
     def forward_step(self, sentence):
         sentence = ['<s>'] + sentence + ['</s>']
