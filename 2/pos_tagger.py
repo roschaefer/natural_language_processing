@@ -2,6 +2,7 @@ import os
 import markov
 import genia
 import random
+import timeit
 from IPython import embed
 
 __author__ = "Robert Schaefer"
@@ -74,9 +75,12 @@ class PosTagger:
 
 
 if __name__ == "__main__":
-    path = "./GENIA_sample/"
+    start = timeit.default_timer()
+    path = "./GENIA_treebank_v1/"
     tagger = PosTagger(path)
     tagger.run(2)
+    stop = timeit.default_timer()
     print("TP : " , tagger.true_positives)
     print("FP : " , tagger.false_positives)
-    print(tagger.precision())
+    print("Precision : ", tagger.precision())
+    print("Runtime(sec) : " , stop - start )

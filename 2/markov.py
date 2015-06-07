@@ -24,8 +24,11 @@ class Model:
                 self.possible_tags.add(tag)
                 previous = tag
             self.transition[(previous, '</s>')] += 1
+        # some auxiliary variables
         self.vocabulary_size_t = len(self.tag_unigrams)
         self.vocabulary_size_e = len(self.context)
+        self.tags_to_start = ['<s>']
+        self.tags_to_start.extend(self.possible_tags)
 
 
 
@@ -40,10 +43,8 @@ class Model:
         best_score = {}
         best_edge = {}
         best_score[(0, '<s>')] = 0
-        tags_to_start = ['<s>']
-        tags_to_start.extend(self.possible_tags)
         for i in range(0, len(sentence)-2):
-            for prev in tags_to_start:
+            for prev in self.tags_to_start:
                 for next in self.possible_tags:
                     if (((i, prev) in best_score) and ((prev, next) in self.transition)):
                         score = best_score[(i, prev)] - math.log(self.prob_t(next,prev)) - math.log(self.prob_e(sentence[i+1], next))
