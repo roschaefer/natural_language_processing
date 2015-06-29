@@ -11,9 +11,8 @@ class TestDataSet:
         return text_categorization.DataSet(self.path())
 
     def test_target(self):
-        assert self.data_set().target == [1,2]
+        assert self.data_set().target == [0,0,0,1,1,1,1,1]
 
     def test_target_names(self):
-        print(self.data_set().target_names)
         assert self.data_set().target_names == ["C01","C02"]
 
