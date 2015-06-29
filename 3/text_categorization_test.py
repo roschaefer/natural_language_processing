@@ -1,6 +1,7 @@
 import text_categorization
 import pytest
 
+
 class TestDataSet:
     @pytest.fixture
     def path(self):
@@ -15,4 +16,5 @@ class TestDataSet:
 
     def test_target_names(self):
         assert self.data_set().target_names == ["C01","C02"]
+
 
