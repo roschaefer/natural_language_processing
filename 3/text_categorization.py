@@ -23,7 +23,8 @@ class DataSet:
 
 if __name__ == "__main__":
     from sklearn.feature_extraction.text import CountVectorizer
-    from sklearn.naive_bayes import MultinomialNB
+    #from sklearn.naive_bayes import MultinomialNB
+    from sklearn.linear_model import SGDClassifier
     from sklearn.feature_extraction.text import TfidfTransformer
     from sklearn.pipeline import Pipeline
     from sklearn import metrics
@@ -31,8 +32,14 @@ if __name__ == "__main__":
 
 
     training = DataSet("../ohsumed-first-20000-docs/")
-    text_clf = Pipeline([('vect', CountVectorizer(stop_words = stopwords.LIST)), ('tfidf', TfidfTransformer()), ('clf', MultinomialNB()) ])
+    text_clf = Pipeline([
+        ('vect', CountVectorizer(stop_words = stopwords.LIST)),
+        ('tfidf', TfidfTransformer()),
+        ('clf', SGDClassifier(loss='hinge', penalty='l2', alpha=1e-3, n_iter=5, random_state=42))
+    ])
+
     text_clf = text_clf.fit(training.data, training.target)
+
 
     test = DataSet("../ohsumed-first-20000-docs/", subset="test")
     predicted = text_clf.predict(test.data)
