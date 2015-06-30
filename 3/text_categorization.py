@@ -27,9 +27,11 @@ if __name__ == "__main__":
     from sklearn.feature_extraction.text import TfidfTransformer
     from sklearn.pipeline import Pipeline
     from sklearn import metrics
+    import stopwords
+
 
     training = DataSet("../ohsumed-first-20000-docs/")
-    text_clf = Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', MultinomialNB()) ])
+    text_clf = Pipeline([('vect', CountVectorizer(stop_words = stopwords.LIST)), ('tfidf', TfidfTransformer()), ('clf', MultinomialNB()) ])
     text_clf = text_clf.fit(training.data, training.target)
 
     test = DataSet("../ohsumed-first-20000-docs/", subset="test")
